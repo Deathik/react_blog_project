@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>
+            {{ post.title }}<br />
+            <small>Posted: {{ post.pub_date }}
+            {% if post.edited %}
+            <br />Edited: {{ post.last_modified }}
+            {% endif %}
+            </small>
+        </h1>
+        {{ post.text|linebreaks }}
+    </div>
+</div>
+{% endblock content %}

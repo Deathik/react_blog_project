@@ -1,0 +1,10 @@
+{% extends "rest_framework/base.html" %}
+
+{% block branding %}
+<a class="navbar-brand" href="{% url 'blog:index' %}">Blog</a>
+{% endblock %}
+
+{% block userlinks %}
+<li><a href='{% url "api-docs:docs-index" %}'>API Docs</a></li>
+{{block.super}}
+{% endblock %}
