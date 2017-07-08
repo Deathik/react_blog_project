@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Blog{% endblock %}
 
+{% block static %}
+<script src="https://use.fontawesome.com/fbf106d4ce.js"></script>
+{% endblock static %}
+
 {% block content %}
 <div class="container">
     <div class="row">
@@ -9,32 +13,34 @@
         <article class="col-md-8 col-md-offset-2">
             <div class="thumbnail">
                 <div class="caption">
-                <h1>{{ post.title|title }}</h1>
-                {% if post.pub_date == post.last_modified %}
-                <h6>publicated: {{ post.pub_date }}</h6>
-                {% else %}
-                <h6 style='color: #b2b1b1;'>edited: {{ post.last_modified }}</h6>
-                {% endif %}
-                <p>{{ post.text|linebreaks }}</p>
-                <a class="btn btn-default" href="{% url "blog:post_detail" post.pk %}">Read more</a>
-                {% if post.author == request.user %}
-                <div class="pull-right">
-                    <a class="btn btn-primary" href="{% url "blog:post_edit" post.id %}">Edit Post</a>
-                    <a class="btn btn-danger" href="{% url "blog:post_delete" post.id %}">Delete Post</a>
-                </div>
-                {% endif %}
+                    <h1>{{ post.title|title }}</h1>
+                    {% if post.pub_date == post.last_modified %}
+                    <h6>publicated: {{ post.pub_date }}</h6>
+                    {% else %}
+                    <h6 style='color: #b2b1b1;'>edited: {{ post.last_modified }}</h6>
+                    {% endif %}
+                    <p>{{ post.text|linebreaks }}</p>
+                    <a class="btn btn-default" href="{% url "blog:post_detail" post.pk %}">Read more</a>
+                    {% if post.author == request.user %}
+                    <div class="pull-right">
+                        <a class="btn btn-info" href="{% url "blog:post_edit" post.id %}">
+                            <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                            <span class="hidden-xs">Edit Post</span>
+                        </a>
+                        <a class="btn btn-danger" href="{% url "blog:post_delete" post.id %}">
+                            <i class="fa fa-trash-o"></i>
+                            <span class="hidden-xs">Delete Post</span>
+                        </a>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </article>
         {% endfor %}
         {% else %}
-        <div class="container">
-            <div class="row">
-            <article class="col-md-8 col-md-offset-2">
-                <h1>There is no posts here</h1>
-            </article>
-        </div>
-    </div>
+        <article class="col-md-8 col-md-offset-2">
+            <h1>There is no posts here</h1>
+        </article>
         {% endif %}
     </div>
 </div>

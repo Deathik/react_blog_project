@@ -16,10 +16,13 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li><a href="{% url "blog:post_create" %}">New Post</a></li>
+                    <li><a href='{% url "blog:index" %}'>NoAjax site</a></li>
+                    <li><a href='{% url "ajax_blog:index" %}'>Ajax site</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user.is_authenticated %}
                     <li><p class="navbar-text">{{ request.user.username }}</p></li>
+                    <li><a href="{% url "api-root" %}">API</a></li>
                     <li><a href="{% url "blog:logout" %}">Log out</a> </li>
                     {% else %}
                     <li><a href="{% url "blog:login" %}">Log in</a></li>

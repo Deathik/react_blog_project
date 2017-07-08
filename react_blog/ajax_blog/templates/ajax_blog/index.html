@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Ajax Blog{% endblock title %}
+
+{% block static %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+<script src="https://use.fontawesome.com/fbf106d4ce.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+    </div>
+</div>
+<!-- Read more Modal -->
+<div id="ReadMoreModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body text-center">
+        <i style="color: #b3c2c3;" class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Read more Modal -->
+
+<!-- Edit modal -->
+<div id="EditModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Edit post</h4>
+      </div>
+      <div class="modal-body text-center">
+        <div id="message"></div>
+        <i style="color: #b3c2c3;" class="fa fa-cog fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+<!--End Edit modal-->
+
+<!-- Delete modal -->
+<div id="DeleteModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"></h4>
+      </div>
+      <div class="modal-body text-center">
+        <div id="message"></div>
+        Do you reall wanna to delete this post?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--End Delete modal-->
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    $.ajax({
+        url: "{% url 'post-list'  %}",
+        method: "GET",
+        dataType: "json",
+        success: function(data){
+           $.each(data['results'], function(index, elem){
+               createPost(elem);
+           })
+        },
+        error: function(data){
+            $('.row').append('<div class="alert alert-danger">Something went wrong... Error: ' + data.responseJSON['detail'] + '</div>');
+        }
+    });
+
+    function createPost(data){
+        var title = '<h1>' + data.title + '<br /><small>'+ new Date(data.last_modified) +'</small></h1>';
+        var text = '<p>' + data.text + '</p>';
+        var button_read = '<button class="btn btn-default" data-id="' + data.id + '" data-toggle="modal" data-target="#ReadMoreModal">Read more</button>';
+        if (data.author === '{{ request.user.username }}'){
+            var button_edit = '<button style="margin-right: 5px" class="btn btn-info" data-id="' + data.id + '" data-toggle="modal" data-target="#EditModal"><i class="fa fa-pencil-square-o" aria-hidden="true"></i><span class="hidden-xs"> Edit</span></button>';
+            var button_delete = '<button class="btn btn-danger" data-id="' + data.id + '" data-toggle="modal" data-target="#DeleteModal"><i class="fa fa-trash-o"></i><span class="hidden-xs"> Delete</span></button>';
+        } else {
+            var button_edit = "";
+            var button_delete = "";
+        };
+        var article = '<article class="col-md-8 col-md-offset-2">' + 
+          '<div class="thumbnail">' +
+          '<div class="caption">' +
+          title + text +
+          button_read +
+          '<div class="pull-right">' +
+          button_edit + 
+          button_delete +
+          '</div></div></div></article>';
+        $('.row').append(article);
+    };
+
+    function EditPost(id){
+        var title = $("#title").val();
+        var text = $("#text").val();
+        var csrf_token = Cookies.get('csrftoken');
+        $.ajax({
+            headers: {
+                "X-CSRFToken": csrf_token
+            },
+            url: '{% url "post-detail" -1 %}'.replace('-1', id),
+            method: "PUT",
+            dataType: 'json',
+            data: {
+                "title": title,
+                "text": text
+            },
+            success: function(data){
+                console.log('Updated successfully!')
+                $('#message').append('<div class="alert alert-success"><strong>You edited this post</strong></div>');
+            },
+        });
+    };
+
+    function DeletePost(id){
+        var csrf_token = Cookies.get('csrftoken');
+        $.ajax({
+            headers: {
+                "X-CSRFToken": csrf_token
+            },  
+            url: '{% url "post-detail" -1 %}'.replace('-1', id),
+            method: "DELETE",
+            dataType: 'json',
+            success: function(){
+                $('#message').append('<div class="alert alert-warning"><strong>You deleted this post</strong> You will be redirected in 3 seconds...</div>');
+                setTimeout(function () {
+                    window.location.replace('/ajax/');
+                }, 3000);
+            }
+        });
+    };
+
+    $("#DeleteModal").on('show.bs.modal', function(event){
+        var id = $(event.relatedTarget).data('id');
+        $(".modal-footer").append('<button type="button" class="btn btn-danger" onclick="DeletePost('+ id +')">Delete</button>');
+    });
+
+    $('#ReadMoreModal').on('show.bs.modal', function(event){
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var modal = $(this);
+        $.ajax({
+            url: "{% url 'post-detail' -1 %}".replace('-1', id),
+            method: "GET",
+            dataType: "json",
+            success: function(data){
+                modal.find('.modal-title').text(data.title);
+                modal.find('.modal-body').text(data.text);
+            },
+            error: function(data){
+                console.log(data);
+            }
+        });
+    });
+
+    $('#EditModal').on('show.bs.modal', function(event){
+        var id = $(event.relatedTarget).data('id');
+        var msg_div = '<div id="message"></div>';
+        var form = '<label for="title">Title:<input id="title" type="text" /></label>' +
+        '<label for="text">Text:<textarea rows=7 id="text" /></label>'
+        $(this).find('.modal-title').empty().text('Edit post');
+        $(this).find('.modal-body').empty().append(msg_div, form);
+        $(this).find('.modal-footer').empty().append('<button id="edit" class="btn btn-info" onclick="EditPost('+ id +')">Edit</button><button id="close" type="button" class="btn btn-default" data-dismiss="modal">Close</button>')
+        $.ajax({
+            url: "{% url 'post-detail' -1 %}".replace('-1', id),
+            method: "GET",
+            dataType: "json",
+            success: function(data){
+                console.log(data)
+                $('#title').val(data.title);
+                $('#text').val(data.text);
+            },
+        })
+    });
+
+    $("#ReadMoreModal, #EditModal").on('hide.bs.modal', function(){
+        $(this).find('.modal-title').text("");
+        $(this).find('.modal-body').empty().append('<i style="color: #7f9094;" class="fa fa-cog fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span>');
+    });
+</script>
+{% endblock javascript %}

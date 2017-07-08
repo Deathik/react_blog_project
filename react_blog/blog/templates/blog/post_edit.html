@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
 {% block static %}
-<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+<script src="https://use.fontawesome.com/fbf106d4ce.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -19,9 +17,8 @@
         {% if form.non_field_errors %}
           {{ form.non_field_errors }}
         {% endif %}
-        <!--<form id='form' method="POST" class="form-horizontal">-->
-        <div id='message'></div>
-        <div class="form-horizontal">
+        <form id='form' method="POST" class="form-horizontal">
+        <div class="col-md-12 form-horizontal">
             {% csrf_token %}
             <div class="form-group">
                 {% if form.title.errors %}
@@ -37,42 +34,12 @@
                 <label for="{{ form.text.id_for_label }}">Text:</label>
                 {{ form.text }}
             </div>
-            <button id='submit' class="btn btn-primary">Edit post</button>
-        <!--</form>-->
+            <button id='submit' class="btn btn-info">
+                <i id="loading-icon" style="display: none" class="fa fa-spinner fa-spin fa-fw"></i>
+                <span class="sr-only">Loading...</span><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit post</button>
+            <button class="btn btn-danger" data-toggle="modal" data-target=".delete-modal"><i class="fa fa-trash-o"></i> Delete Post</button>
+        </form>
         </div>
     </div>
 </div>
 {% endblock content %}
-
-{% block javascript %}
-<script>
-    $("#submit").click(function(){
-        var title = $("#{{ form.title.id_for_label }}").val();
-        var text = $("#{{ form.text.id_for_label }}").val();
-        var csrf_token = Cookies.get('csrftoken');
-        $.ajax({
-            headers: {
-                "X-CSRFToken": csrf_token
-            },
-            url: '{% url "post-detail" object.id %}',
-            method: "PUT",
-            dataType: 'json',
-            data: {
-                "title": title,
-                "text": text,
-            },
-            success: function(data){
-                // var button = document.createElement('button');
-                // $(button).addClass('close').attr('type', 'button').attr('href', '#').attr('data-dismiss', 'alert').attr('aria-label', 'close').append('&times;')
-                $('#message').addClass('alert alert-success alert-dismissable');
-                $('#message').attr('role', 'alert');
-                $('#message').append('Sucessfully updated!');
-                // $('#message').append(button)
-            },
-            error: function(data){
-                $('#form').before("Fail :(")
-            }
-        });
-    });
-</script>
-{% endblock %}
