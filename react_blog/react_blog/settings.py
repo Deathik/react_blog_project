@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'blog.apps.BlogConfig',
     'ajax_blog.apps.AjaxBlogConfig',
+    'react.apps.ReactConfig',
 ]
 
 MIDDLEWARE = [
@@ -108,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#Login/Logout setting
+# Login/Logout setting
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_URL = '/logout/'
@@ -133,7 +134,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-#Rest Framework settings
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, "dist")
+
+# Rest Framework settings
 REST_FRAMEWORK = {
-    "PAGE_SIZE": 10
+    "PAGE_SIZE": 5
 }

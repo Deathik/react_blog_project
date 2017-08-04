@@ -4,7 +4,7 @@
         <meta charset="utf-8">
 		<link rel='icon' href='https://s6.postimg.org/7jzrdxd0x/favicon.png' type="image/x-icon">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
         {% block static %}{% endblock %}
         <title>{% block title %}Base{% endblock %}</title>
     </head>
@@ -18,6 +18,7 @@
                     <li><a href="{% url "blog:post_create" %}">New Post</a></li>
                     <li><a href='{% url "blog:index" %}'>NoAjax site</a></li>
                     <li><a href='{% url "ajax_blog:index" %}'>Ajax site</a></li>
+                    <li><a href='{% url "react:index" %}'>React site</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if request.user.is_authenticated %}

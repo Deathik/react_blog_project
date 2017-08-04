@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load static %}
+{% block static %}
+<script src="https://use.fontawesome.com/fbf106d4ce.js"></script>
+{% endblock %}
+{% block javascript %}
+<script src="{% static 'react/main.bundle.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div id="message"></div>
+<div id="root"></div>
+{% endblock content %}

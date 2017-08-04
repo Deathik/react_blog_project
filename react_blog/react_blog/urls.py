@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include("blog.urls")),
     url(r'^ajax/', include("ajax_blog.urls")),
+    url(r'^react/', include("react.urls")),
     url(r'^api/', include('blog.api_v1.urls')),
     url(r'^api-auth/', include('rest_framework.urls')),
 ]
